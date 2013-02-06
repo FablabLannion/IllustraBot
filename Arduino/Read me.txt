@@ -1,0 +1,41 @@
+Concernant le projet ARDUINO, on va devoir utiliser le logiciel winavr à la place de l’IDE Arduino car il n’est pas adapté à notre projet (nombreux fichiers pour le Grbl)
+1. Récupérer le logiciel http://winavr.sourceforge.net/
+2. Récupérer le logiciel Arduino (version anglaise)
+3. Installer le logiciel winAVR et Arduino
+
+J’ai intégrer et modifier le code SPI pour pouvoir l’utiliser avec WinAVR
+
+Copier le répertoire FABLAB dans c:/
+
+Dans un premier temps, il faudrait tester seulement le SPI_slave après on verra pour le projet avec Grbl (Illustrabot)
+
+Projet SPI_slave
+1. Ouvrir Programmers Notepad (WinAVR)
+2. File / Open projects
+3. SPI_slave/Project/SPI.pnproj
+
+Dans le projet, il y a quelques fichiers qui ont leur importance :
+Pins_arduino.h (j’ai intégrer pour carte Arduino standard, il faut vérifier que les pins sont ok par rapport à la carte pour ne pas tout grillé)
+Si ce n’est pas un standard, il faut le remplacer par leonardo/mega/micro selon le cas.
+Celui dans le projet a les pins SPI suivantes
+« static const uint8_t SS   = 10;
+static const uint8_t MOSI = 11;
+static const uint8_t MISO = 12;
+static const uint8_t SCK  = 13; »
+Makefile
+Composant => ATMEGA328p / Frequence 16Mhz
+La ligne programmer (qui sert pour transférer le programme dans la carte sera à vérifier). Pour le moment c’est « PROGRAMMER = -C "C:\Program Files\arduino-0022\hardware\tools\avr\etc\avrdude.conf" -c stk500v1 -P COM1 -b57600 ». 
+A voir par rapport à ce qui est utilisé avec l’IDE ARDUINO stk500v1 ou autres et le port COM utilisé ? 
+
+4. Tools/[WinAVR] Make clean
+5. Tools//[WinAVR] Make all => Il va recompiler le code
+6. Reste à le transférer Tools//[WinAVR] Program
+
+Pour info, je n’ai pas eu le temps de vérifier les numéros des pins Rx/Tx UART dans le code donc A VERIFIER avant de programmer.
+
+Le projet compile mais je ne sais pas s’il fonctionne.
+Une fois que le programme SPI est ok on peut passer au projet avec Grbl.
+
+Même procédure que ci-dessus (Projet => FABLAB\Illustrabot\Project\Illustrabot_arduino.pnproj)
+Il compile mais il n’a pas été testé.
+Tout comme le projet SPI_slave, les pins UART et les pins gérant la partie moteur n’ont pas été validé donc avant de l’implanter sur carte, vérifié que les pins sont ok pour ne pas tout griller.
