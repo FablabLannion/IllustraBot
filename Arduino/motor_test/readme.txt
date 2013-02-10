@@ -12,3 +12,4 @@ paramètre négatif : sens anti-horaire
 D nb            moteur droit
 g nb            moteur gauche
 t nb1 nb2       les 2 moteurs
+s nb1           configure la vitesse des moteurs en RPM

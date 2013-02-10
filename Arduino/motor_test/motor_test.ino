@@ -10,7 +10,7 @@
 #include <Stepper.h>
 
 // motor speed in RPM
-#define SPEED 150
+#define INITIAL_SPEED 100
 
 // number of steps for one revolution
 #define STEPS_PER_REVOL 200
@@ -32,8 +32,7 @@ void setup() {
    digitalWrite ( 9, HIGH);
    digitalWrite (10, HIGH);
    // set the motor speed:
-   motorLeft.setSpeed  (SPEED);
-   motorRight.setSpeed (SPEED);
+   setSpeed (INITIAL_SPEED);
    // init serial
    Serial.begin(9600);
 }
@@ -58,6 +57,10 @@ void loop() {
             p1 = Serial.parseInt();
             p1 = (c=='g')? p1 : STEPS_PER_REVOL*p1;
             moveLeft (p1);
+            break;
+         case 's': // set Motors speed
+            p1 = Serial.parseInt();
+            setSpeed (p1);
             break;
          case 'T': // move both motors (rotations)
          case 't': // move both motors (steps)
@@ -123,6 +126,11 @@ void moveLeft (int steps) {
    }   
 }
 
-
-
+/** set the 2 motors speed
+ * @param sp the speed in RPM
+ */
+void setSpeed (int sp) {
+   motorLeft.setSpeed  (sp);
+   motorRight.setSpeed (sp);
+}
 
