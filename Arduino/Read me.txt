@@ -2,6 +2,8 @@ Concernant le projet ARDUINO, on va devoir utiliser le logiciel winavr à la pla
 1. Récupérer le logiciel http://winavr.sourceforge.net/
 2. Récupérer le logiciel Arduino (version anglaise)
 3. Installer le logiciel winAVR et Arduino
+Sous Linux, c'est le même chose, mais avec gcc-avr:
+1. sudo apt-get install gcc-avr avr-libc avrdude 
 
 J’ai intégrer et modifier le code SPI pour pouvoir l’utiliser avec WinAVR
 
