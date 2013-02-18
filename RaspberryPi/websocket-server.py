@@ -7,6 +7,7 @@ import tornado.web
 import re
 import math
 import socket
+import spi
 
 return_text = 1
 botname = 'test'
@@ -54,6 +55,15 @@ config = { 'drawbot': {
 				'inverseAxes': 0,
 				'trapezeFactor': 0,
 				'floor': 0,
+				'moveToLenght': 0,
+				},
+			'testSPI': {
+				'type': 'spi',
+				'sizeX': 20,
+				'sizeY': 20,
+				'inverseAxes': 0,
+				'trapezeFactor': 0,
+				'floor': 1,
 				'moveToLenght': 0,
 				},
 		}
@@ -126,21 +136,25 @@ class Robot():
 			self.dev = serial.Serial(config[botname]['arduinoDev'], config[botname]['arduinoDevSpeed'])
 		elif config[botname]['type'] == 'file':
 			self.f = open(config[botname]['file'], 'w')
+		elif config[botname]['type'] == 'spi':
+			spi.initialize()
 		elif config[botname]['type'] == 'socket':
 			self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.socket.connect((config[botname]['socketIP'],config[botname]['socketPort']))
 	
 	# send GCode and wait for ack
-	def write(self, gcode):
+	def write(self, gcode_h):
 		if config[botname]['type'] == 'dev':
-			self.dev.write(gcode)
+			self.dev.write(gcode_h.gcode)
 			self.readLine = self.dev.readline()
 		elif config[botname]['type'] == 'file':
-			self.f.write(gcode+"\n")
+			self.f.write(gcode_h.gcode+"\n")
 			self.f.flush()
 			self.readLine = 'this is a file, can not read robot return'
+		elif config[botname]['type'] == 'spi':
+			spi.transfer((gcode_h.x,gcode_h.y,gcode_h.z,))
 		elif config[botname]['type'] == 'socket':
-			self.socket.sendall(bytes(gcode+"\n", 'UTF-8'))
+			self.socket.sendall(bytes(gcode_h.gcode+"\n", 'UTF-8'))
 			self.readLine = self.socket.recv(1024).decode('UTF-8')
 	
 	# Close communication with the robot
@@ -149,6 +163,8 @@ class Robot():
 			self.dev.close()
 		elif config[botname]['type'] == 'file':
 			self.f.close()
+		elif config[botname]['type'] == 'spi':
+			spi.end()
 		elif config[botname]['type'] == 'socket':
 			self.socket.close()
 	
@@ -164,7 +180,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 	def on_message(self, message):
 		print('Incoming message:', message)
 		gcode_h.parseRaw(message)
-		robot.write(gcode_h.gcode)
+		robot.write(gcode_h)
 		print("I send: " + gcode_h.gcode)
 		print("I get: " + robot.readLine)
 		# Write GCode to TTYUSB
