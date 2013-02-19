@@ -10,10 +10,10 @@ import socket
 import spi
 
 return_text = 1
-botname = 'test'
+botname = 'testSPI'
 sourceMaxX = 500
 sourceMaxY = 700
-config = { 'drawbot': {
+config = {		'drawbot': {
 				'type': 'dev',
 				'arduinoDev': '/dev/ttyUSB0',
 				'arduinoDevSpeed': 115200,
@@ -70,8 +70,8 @@ config = { 'drawbot': {
 				},
 			'testSPI': {
 				'type': 'spi',
-				'sizeX': 20,
-				'sizeY': 20,
+				'sizeX': 500,
+				'sizeY': 700,
 				'inverseAxes': 0,
 				'trapezeFactor': 0,
 				'floor': 1,
@@ -101,7 +101,8 @@ class GCodeHGandler():
 			self.toDrawBotLength()
 			self.gcode = 'l ' + str(self.l1) + ' '+ str(self.l2)
 		else:
-			self.gcode = 'G0X' + str(self.x) + 'Y'+ str(self.y) + 'Z' + str(self.z)
+			self.gcode = 'G0X' + str(self.x)
+			# self.gcode = 'G0X' + str(self.x) + 'Y'+ str(self.y) + 'Z' + str(self.z)
 	
 	# inverse axes
 	def inverseAxes(self):
@@ -148,7 +149,7 @@ class Robot():
 		elif config[botname]['type'] == 'file':
 			self.f = open(config[botname]['file'], 'w')
 		elif config[botname]['type'] == 'spi':
-			spi.initialize()
+			spi.initialize(0,8,250000,0)
 		elif config[botname]['type'] == 'socket':
 			self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.socket.connect((config[botname]['socketIP'],config[botname]['socketPort']))
@@ -163,7 +164,14 @@ class Robot():
 			self.f.flush()
 			self.readLine = 'this is a file, can not read robot return'
 		elif config[botname]['type'] == 'spi':
-			spi.transfer((gcode_h.x,gcode_h.y,gcode_h.z,))
+			self.readLine = "\n"
+			list_g = list(gcode_h.gcode)
+			list_c = [ ord(f) for f in list_g ]
+			print list_g
+			print list_c
+			spi.transfer(list_c)
+			# spi.transfer((ord('G'),ord('0'),ord('X'),ord('0'),ord('Y'),ord('0'),ord('Z'),ord('0')))
+			# spi.transfer(list(gcode_h.gcode+"\n"))
 		elif config[botname]['type'] == 'socket':
 			self.socket.sendall(bytes(gcode_h.gcode+"\n", 'UTF-8'))
 			self.readLine = self.socket.recv(1024).decode('UTF-8')
