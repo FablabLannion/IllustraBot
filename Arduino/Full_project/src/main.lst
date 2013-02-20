@@ -1,0 +1,142 @@
+   1               		.file	"main.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  15               	.Ltext0:
+  16               	.global	main
+  18               	main:
+  19               	.LFB5:
+  20               	.LM1:
+  21 0000 0F93      		push r16
+  22 0002 1F93      		push r17
+  23               	/* prologue: function */
+  24               	/* frame size = 0 */
+  25               	.LM2:
+  26 0004 0E94 0000 		call serial_init
+  27               	.LM3:
+  28 0008 0E94 0000 		call settings_init
+  29               	.LM4:
+  30 000c 0E94 0000 		call st_init
+  31               	.LM5:
+  32 0010 0E94 0000 		call spi_initslave
+  33               	.LM6:
+  34               	/* #APP */
+  35               	 ;  53 "main.c" 1
+  36 0014 7894      		sei
+  37               	 ;  0 "" 2
+  38               	.LM7:
+  39               	/* #NOAPP */
+  40 0016 80E1      		ldi r24,lo8(16)
+  41 0018 E0E0      		ldi r30,lo8(sys)
+  42 001a F0E0      		ldi r31,hi8(sys)
+  43 001c DF01      		movw r26,r30
+  44 001e 1D92      		st X+,__zero_reg__
+  45 0020 8A95      	        dec r24
+  46 0022 01F4      		brne .-6
+  47               	.LM8:
+  48 0024 81E0      		ldi r24,lo8(1)
+  49 0026 8093 0000 		sts sys,r24
+  50               	.LM9:
+  51 002a 8093 0000 		sts sys+1,r24
+  52               	.LM10:
+  53 002e 06E0      		ldi r16,lo8(6)
+  54               	.LM11:
+  55 0030 11E0      		ldi r17,lo8(1)
+  56               	.L6:
+  57               	.LM12:
+  58 0032 8091 0000 		lds r24,sys
+  59 0036 8823      		tst r24
+  60 0038 01F0      		breq .L2
+  61               	.LM13:
+  62 003a 0E94 0000 		call serial_reset_read_buffer
+  63               	.LM14:
+  64 003e 0E94 0000 		call plan_init
+  65               	.LM15:
+  66 0042 0E94 0000 		call gc_init
+  67               	.LM16:
+  68 0046 0E94 0000 		call protocol_init
+  69               	.LM17:
+  70 004a 0E94 0000 		call spindle_init
+  71               	.LM18:
+  72 004e 0E94 0000 		call coolant_init
+  73               	.LM19:
+  74 0052 0E94 0000 		call limits_init
+  75               	.LM20:
+  76 0056 0E94 0000 		call st_reset
+  77               	.LM21:
+  78 005a 0E94 0000 		call sys_sync_current_position
+  79               	.LM22:
+  80 005e 1092 0000 		sts sys,__zero_reg__
+  81               	.LM23:
+  82 0062 1092 0000 		sts sys+2,__zero_reg__
+  83               	.LM24:
+  84 0066 8091 0000 		lds r24,settings+35
+  85 006a 982F      		mov r25,r24
+  86 006c 81FF      		sbrs r24,1
+  87 006e 00C0      		rjmp .L3
+  88 0070 1093 0000 		sts sys+15,r17
+  89               	.L3:
+  90               	.LM25:
+  91 0074 8091 0000 		lds r24,sys+1
+  92 0078 8130      		cpi r24,lo8(1)
+  93 007a 01F4      		brne .L4
+  94 007c 94FF      		sbrs r25,4
+  95 007e 00C0      		rjmp .L4
+  96 0080 0093 0000 		sts sys+1,r16
+  97               	.L4:
+  98               	.LM26:
+  99 0084 8091 0000 		lds r24,sys+1
+ 100 0088 8630      		cpi r24,lo8(6)
+ 101 008a 01F4      		brne .L5
+ 102               	.LM27:
+ 103 008c 82E0      		ldi r24,lo8(2)
+ 104 008e 0E94 0000 		call report_feedback_message
+ 105 0092 00C0      		rjmp .L2
+ 106               	.L5:
+ 107               	.LM28:
+ 108 0094 1092 0000 		sts sys+1,__zero_reg__
+ 109               	.LM29:
+ 110 0098 0E94 0000 		call protocol_execute_startup
+ 111               	.L2:
+ 112               	.LM30:
+ 113 009c 0E94 0000 		call protocol_execute_runtime
+ 114               	.LM31:
+ 115 00a0 0E94 0000 		call protocol_process
+ 116 00a4 00C0      		rjmp .L6
+ 117               	.LFE5:
+ 119               		.comm sys,16,1
+ 144               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\Nicolas\AppData\Local\Temp/ccNAI9kG.s:2      *ABS*:0000003f __SREG__
+C:\Users\Nicolas\AppData\Local\Temp/ccNAI9kG.s:3      *ABS*:0000003e __SP_H__
+C:\Users\Nicolas\AppData\Local\Temp/ccNAI9kG.s:4      *ABS*:0000003d __SP_L__
+C:\Users\Nicolas\AppData\Local\Temp/ccNAI9kG.s:5      *ABS*:00000034 __CCP__
+C:\Users\Nicolas\AppData\Local\Temp/ccNAI9kG.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\Nicolas\AppData\Local\Temp/ccNAI9kG.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\Nicolas\AppData\Local\Temp/ccNAI9kG.s:18     .text:00000000 main
+                            *COM*:00000010 sys
+
+UNDEFINED SYMBOLS
+serial_init
+settings_init
+st_init
+spi_initslave
+serial_reset_read_buffer
+plan_init
+gc_init
+protocol_init
+spindle_init
+coolant_init
+limits_init
+st_reset
+sys_sync_current_position
+settings
+report_feedback_message
+protocol_execute_startup
+protocol_execute_runtime
+protocol_process
+__do_clear_bss
