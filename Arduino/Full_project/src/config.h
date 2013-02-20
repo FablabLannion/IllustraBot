@@ -27,6 +27,9 @@
 // Default settings. Used when resetting EEPROM. Change to desired name in defaults.h
 #define DEFAULTS_GENERIC
 
+// Default motor parameters
+#define DEFAULTS_ILLUSTRABOT_MOTOR
+
 // Serial baud rate
 #define BAUD_RATE 115200
 
@@ -123,7 +126,8 @@
 // round-off can be great enough to cause problems and/or it's too fast for the Arduino. The correct
 // value for this parameter is machine dependent, so it's advised to set this only as high as needed.
 // Approximate successful values can range from 30L to 100L or more.
-#define ACCELERATION_TICKS_PER_SECOND 50L
+//#define ACCELERATION_TICKS_PER_SECOND 50L
+#define ACCELERATION_TICKS_PER_SECOND 100L
 
 // Minimum planner junction speed. Sets the default minimum speed the planner plans for at the end
 // of the buffer and all stops. This should not be much greater than zero and should only be changed
