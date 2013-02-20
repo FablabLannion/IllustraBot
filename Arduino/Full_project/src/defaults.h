@@ -27,7 +27,7 @@
 #ifndef defaults_h
 #define defaults_h
 
-#ifdef DEFAULTS_GENERIC
+/*#ifdef DEFAULTS_GENERIC
   // Grbl generic default settings. Should work across different machines.
   #define DEFAULT_X_STEPS_PER_MM 250.0
   #define DEFAULT_Y_STEPS_PER_MM 250.0
@@ -52,7 +52,7 @@
   #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
   #define DEFAULT_DECIMAL_PLACES 3
   #define DEFAULT_N_ARC_CORRECTION 25
-#endif
+#endif*/
 
 #ifdef DEFAULTS_SHERLINE_5400
   // Description: Sherline 5400 mill with three NEMA 23 Keling  KL23H256-21-8B 185 oz-in stepper motors,
@@ -149,6 +149,68 @@
   #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
   #define DEFAULT_DECIMAL_PLACES 3
   #define DEFAULT_N_ARC_CORRECTION 25
+#endif
+
+#ifdef DEFAULTS_ILLUSTRABOT_MOTOR
+
+  #define STEPS_PER_REV 200.0
+  #define RAYON 5
+  //#define MM_PER_REV (2*3,1415926535897932384626433832795*RAYON) // mm/tour
+  #define MM_PER_REV 37 // mm/tour
+  #define MICROSTEPS 8
+  #define DEFAULT_X_STEPS_PER_MM (STEPS_PER_REV*MICROSTEPS/MM_PER_REV)
+  #define DEFAULT_Y_STEPS_PER_MM (STEPS_PER_REV*MICROSTEPS/MM_PER_REV)
+  #define DEFAULT_Z_STEPS_PER_MM (STEPS_PER_REV*MICROSTEPS/MM_PER_REV)
+  #define DEFAULT_STEP_PULSE_MICROSECONDS 2
+  #define DEFAULT_MM_PER_ARC_SEGMENT 0.1
+  #define DEFAULT_RAPID_FEEDRATE 635.0 // mm/min (25ipm)
+  #define DEFAULT_FEEDRATE 635.0 // mm/min (25ipm) voir pour essayer + fort en vitesse
+  #define DEFAULT_ACCELERATION 150.0*60*60 // 150 mm/min^2
+  #define DEFAULT_JUNCTION_DEVIATION 0.05 // mm
+  #define DEFAULT_STEPPING_INVERT_MASK ((1<<Y_DIRECTION_BIT)|(1<<Z_DIRECTION_BIT))
+  #define DEFAULT_REPORT_INCHES 1 // false
+  #define DEFAULT_AUTO_START 1 // true
+  #define DEFAULT_INVERT_ST_ENABLE 0 // false
+  #define DEFAULT_HARD_LIMIT_ENABLE 0  // false
+  #define DEFAULT_HOMING_ENABLE 0  // false
+  #define DEFAULT_HOMING_DIR_MASK 0 // move positive dir
+  #define DEFAULT_HOMING_RAPID_FEEDRATE 250.0 // mm/min
+  #define DEFAULT_HOMING_FEEDRATE 25.0 // mm/min
+  #define DEFAULT_HOMING_DEBOUNCE_DELAY 100 // msec (0-65k)
+  #define DEFAULT_HOMING_PULLOFF 1.0 // mm
+  #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
+  #define DEFAULT_DECIMAL_PLACES 3
+  #define DEFAULT_N_ARC_CORRECTION 25
+ 
+  /*
+  #define STEPS_PER_REV 200.0
+  #define MM_PER_REV (0.050*MM_PER_INCH) // 0.050 inch/rev leadscrew
+  #define MICROSTEPS 8
+  #define DEFAULT_X_STEPS_PER_MM (STEPS_PER_REV*MICROSTEPS/MM_PER_REV)
+  #define DEFAULT_Y_STEPS_PER_MM (STEPS_PER_REV*MICROSTEPS/MM_PER_REV)
+  #define DEFAULT_Z_STEPS_PER_MM (STEPS_PER_REV*MICROSTEPS/MM_PER_REV)
+  #define DEFAULT_STEP_PULSE_MICROSECONDS 10
+  #define DEFAULT_MM_PER_ARC_SEGMENT 0.1
+  #define DEFAULT_RAPID_FEEDRATE 635.0 // mm/min (25ipm)
+  #define DEFAULT_FEEDRATE 254.0 // mm/min (10ipm)
+  #define DEFAULT_ACCELERATION 50.0*60*60 // 50 mm/min^2
+  #define DEFAULT_JUNCTION_DEVIATION 0.05 // mm
+  #define DEFAULT_STEPPING_INVERT_MASK ((1<<Y_DIRECTION_BIT)|(1<<Z_DIRECTION_BIT))
+  #define DEFAULT_REPORT_INCHES 1 // false
+  #define DEFAULT_AUTO_START 1 // true
+  #define DEFAULT_INVERT_ST_ENABLE 0 // false
+  #define DEFAULT_HARD_LIMIT_ENABLE 0  // false
+  #define DEFAULT_HOMING_ENABLE 0  // false
+  #define DEFAULT_HOMING_DIR_MASK 0 // move positive dir
+  #define DEFAULT_HOMING_RAPID_FEEDRATE 250.0 // mm/min
+  #define DEFAULT_HOMING_FEEDRATE 25.0 // mm/min
+  #define DEFAULT_HOMING_DEBOUNCE_DELAY 100 // msec (0-65k)
+  #define DEFAULT_HOMING_PULLOFF 1.0 // mm
+  #define DEFAULT_STEPPER_IDLE_LOCK_TIME 25 // msec (0-255)
+  #define DEFAULT_DECIMAL_PLACES 3
+  #define DEFAULT_N_ARC_CORRECTION 25
+  */
+
 #endif
 
 #endif
