@@ -11,8 +11,8 @@ import spi
 
 return_text = 1
 botname = 'testSPI'
-sourceMaxX = 500
-sourceMaxY = 700
+sourceMaxX = 465
+sourceMaxY = 780
 config = {		'drawbot': {
 				'type': 'dev',
 				'arduinoDev': '/dev/ttyUSB0',
@@ -97,12 +97,7 @@ class GCodeHGandler():
 			
 	# Prepare the GCode depending on the target (DrawBot or Reprap)
 	def prepareGCode(self):
-		if config[botname]['moveToLenght']:
-			self.toDrawBotLength()
-			self.gcode = 'l ' + str(self.l1) + ' '+ str(self.l2)
-		else:
-			self.gcode = 'G0X' + str(self.x)
-			# self.gcode = 'G0X' + str(self.x) + 'Y'+ str(self.y) + 'Z' + str(self.z)
+		self.gcode = 'G0X' + str(self.x) + 'Y'+ str(self.y) + 'Z' + str(self.z) + "\n"
 	
 	# inverse axes
 	def inverseAxes(self):
@@ -112,9 +107,9 @@ class GCodeHGandler():
 
 	# Floor values
 	def floor(self):
-		if config[botname]['moveToLenght']:
-			self.l1 = int(math.floor(self.l1))
-			self.l2 = int(math.floor(self.l2))
+		self.x = int(math.floor(self.x))
+		self.y = int(math.floor(self.y))
+		self.z = int(math.floor(self.z))
 	
 	# Prepare DrawBot length
 	def toDrawBotLength(self):
@@ -136,6 +131,8 @@ class GCodeHGandler():
 			self.x = (self.x-config[botname]['sizeX']/2)\
 						*(1+(config[botname]['trapezeFactor']-1)*self.y/config[botname]['sizeY'])\
 						+config[botname]['trapezeFactor'] * config[botname]['sizeX']/2
+		self.x = round(self.x,2)
+		self.y = round(self.y,2)
 
 	# Print out
 	def debugGCode(self):
@@ -149,7 +146,7 @@ class Robot():
 		elif config[botname]['type'] == 'file':
 			self.f = open(config[botname]['file'], 'w')
 		elif config[botname]['type'] == 'spi':
-			spi.initialize(0,8,250000,0)
+			spi.initialize(0,32,250000,0)
 		elif config[botname]['type'] == 'socket':
 			self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.socket.connect((config[botname]['socketIP'],config[botname]['socketPort']))
@@ -165,13 +162,9 @@ class Robot():
 			self.readLine = 'this is a file, can not read robot return'
 		elif config[botname]['type'] == 'spi':
 			self.readLine = "\n"
-			list_g = list(gcode_h.gcode)
-			list_c = [ ord(f) for f in list_g ]
-			print list_g
+			list_c = tuple(map(ord,list(gcode_h.gcode)))
 			print list_c
 			spi.transfer(list_c)
-			# spi.transfer((ord('G'),ord('0'),ord('X'),ord('0'),ord('Y'),ord('0'),ord('Z'),ord('0')))
-			# spi.transfer(list(gcode_h.gcode+"\n"))
 		elif config[botname]['type'] == 'socket':
 			self.socket.sendall(bytes(gcode_h.gcode+"\n", 'UTF-8'))
 			self.readLine = self.socket.recv(1024).decode('UTF-8')
