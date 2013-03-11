@@ -10,10 +10,12 @@ import socket
 import spi
 
 return_text = 1
-botname = 'testSPI'
-sourceMaxX = 465
-sourceMaxY = 780
-config = {		'drawbot': {
+botname = 'testFile'
+#~ sourceMaxX = 465
+#~ sourceMaxY = 780
+sourceMaxX = 400
+sourceMaxY = 400
+config = {	'drawbot': {
 				'type': 'dev',
 				'arduinoDev': '/dev/ttyUSB0',
 				'arduinoDevSpeed': 115200,
@@ -23,7 +25,6 @@ config = {		'drawbot': {
 				'trapezeFactor': 0,
 				'floor': 1,
 				'moveToLenght': 1,
-				'extraLenght': 5,
 				},
 			'reprap': {
 				'type': 'dev',
@@ -61,12 +62,12 @@ config = {		'drawbot': {
 			'testFile': {
 				'type': 'file',
 				'file': '/tmp/gcode',
-				'sizeX': 20,
-				'sizeY': 20,
+				'sizeX': 400,
+				'sizeY': 400,
 				'inverseAxes': 0,
 				'trapezeFactor': 0,
-				'floor': 0,
-				'moveToLenght': 0,
+				'floor': 1,
+				'moveToLenght': 1,
 				},
 			'testSPI': {
 				'type': 'spi',
@@ -75,7 +76,7 @@ config = {		'drawbot': {
 				'inverseAxes': 0,
 				'trapezeFactor': 0,
 				'floor': 1,
-				'moveToLenght': 0,
+				'moveToLenght': 1,
 				},
 		}
 
@@ -88,10 +89,12 @@ class GCodeHGandler():
 		self.y = float(matchObj.group(2))
 		self.z = float(matchObj.group(3))
 		self.scale()
+		if config[botname]['moveToLenght']:
+				self.toDrawBotLength()
 		if config[botname]['inverseAxes']:
-			self.inverseAxes()
+				self.inverseAxes()
 		if config[botname]['floor']:
-			self.floor()
+				self.floor()
 		self.prepareGCode()
 		self.debugGCode()
 			
@@ -113,8 +116,9 @@ class GCodeHGandler():
 	
 	# Prepare DrawBot length
 	def toDrawBotLength(self):
-		self.l1 = math.sqrt(math.pow(self.x,2)+math.pow(self.y,2)) + config[botname]['extraLenght']
-		self.l2 = math.sqrt(math.pow(config[botname]['sizeX']-self.x,2)+math.pow(self.y,2)) + config[botname]['extraLenght']
+		orig_x = self.x
+		self.x = math.sqrt(math.pow(self.x,2)+math.pow(self.y,2))
+		self.y = math.sqrt(math.pow(config[botname]['sizeX']-orig_x,2)+math.pow(self.y,2))
 
 	# Scale the gcode to the target
 	def scale(self):
