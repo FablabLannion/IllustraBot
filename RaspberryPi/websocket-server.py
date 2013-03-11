@@ -85,18 +85,21 @@ class GCodeHGandler():
 	def parseRaw(self, rawLine):
 		self.raw = rawLine
 		matchObj = re.match( r'.*g0x(.*)y(.*)z(.*)', rawLine, re.M|re.I)
-		self.x = float(matchObj.group(1))
-		self.y = float(matchObj.group(2))
-		self.z = float(matchObj.group(3))
-		self.scale()
-		if config[botname]['moveToLenght']:
-				self.toDrawBotLength()
-		if config[botname]['inverseAxes']:
+		# exemple gcode: g0x42y24z00
+		if matchObj != None:
+			self.x = float(matchObj.group(1))
+			self.y = float(matchObj.group(2))
+			self.z = float(matchObj.group(3))
+			self.scale()
+			if config[botname]['inverseAxes']:
 				self.inverseAxes()
-		if config[botname]['floor']:
+			if config[botname]['floor']:
 				self.floor()
-		self.prepareGCode()
-		self.debugGCode()
+			self.prepareGCode()
+			self.debugGCode()
+			return True # gcode is valid
+		else:
+			return False # gcde is invalid
 			
 	# Prepare the GCode depending on the target (DrawBot or Reprap)
 	def prepareGCode(self):
@@ -192,18 +195,21 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		robot.init()
 
 	# When the websocket receive a message
-	#   TODO: redirect gcode to /dev/spidev0.0 ou 0.1
 	def on_message(self, message):
 		print('Incoming message:', message)
-		gcode_h.parseRaw(message)
-		robot.write(gcode_h)
-		print("I send: " + gcode_h.gcode)
-		print("I get: " + robot.readLine)
-		# Write GCode to TTYUSB
-		if return_text:
-			self.write_message("You said: " + message)
-			self.write_message("I send: " + gcode_h.gcode)
-			self.write_message("I get: " + robot.readLine)
+		ret = gcode_h.parseRaw(message)
+		if ret == True:
+			robot.write(gcode_h)
+			print("I send: " + gcode_h.gcode)
+			print("I get: " + robot.readLine)
+			# Write GCode to TTYUSB
+			if return_text:
+				self.write_message("You said: " + message)
+				self.write_message("I send: " + gcode_h.gcode)
+				self.write_message("I get: " + robot.readLine)
+		else:
+			if return_text:
+				self.write_message("Invalid gcode")
 	
 	# When the websocket is closed
 	def on_close(self):
