@@ -1,3 +1,7 @@
+<?php
+$x = isset($_GET['x']) ? $_GET['x']: 400;
+$y = isset($_GET['y']) ? $_GET['y']: 400;
+?>
 <html>
   <head>
     <title>WebSockets with Python & Tornado</title>
@@ -12,7 +16,7 @@
 		}
 		#log {
 			width:400px;
-			height:400px;
+			height:<? print $y; ?>px;
 			overflow:scroll;
 			right:20px;
 			margin:auto;
@@ -24,8 +28,8 @@
 		}
 		#mycanvas{
 			border: 1px solid gray;
-			width: 400px;
-			height: 400px;
+			width: <? print $x; ?>px;
+			height: <? print $y; ?>px;
 			margin: 5;
 		}
     </style>
@@ -40,7 +44,6 @@
           var min = now.getMinutes();
           var hr = now.getHours();
           $("#log").html($("#log").html() + "<br/>" + hr + ":" + min + ":" + sec + " ___ " +  msg);
-          //$("#log").animate({ scrollTop: $('#log')[0].scrollHeight}, 100);
           $('#log').scrollTop($('#log')[0].scrollHeight);
         }
 
@@ -75,78 +78,92 @@
 			layer: true,
 			fillStyle: "#eee",
 			x: 0, y: 0,
-			width: 400,
-			height: 400,
+			width: <? print $x; ?>,
+			height: <? print $y; ?>,
 			fromCenter: false,
 			click: function(layer) {
 		        var dx, dy, dist;
-				dx = layer.eventX - layer.x;
-				dy = layer.eventY - layer.y;
+				dx = Math.round(layer.eventX - layer.x);
+				dy = Math.round(layer.eventY - layer.y);
+				l1=Math.round(Math.sqrt(Math.pow(dx,2)+Math.pow(dy,2)));
+				l2=Math.round(Math.sqrt(Math.pow(<? print $x; ?>-dx,2)+Math.pow(dy,2)));
 				console.info(dx +', '+ dy);
+				$("canvas").removeLayer("x");
+				$("canvas").drawLine({
+					layer: true,
+					name: "x",
+					strokeStyle: "#00F",
+					strokeWidth: 2,
+					x1: dx, y1: 0,
+					x2: dx, y2: dy,
+				});
+				$("canvas").removeLayer("y");
+				$("canvas").drawLine({
+					layer: true,
+					name: "y",
+					strokeStyle: "#00F",
+					strokeWidth: 2,
+					x1: 0, y1: dy,
+					x2: dx, y2: dy,
+				});
+				$("canvas").removeLayer("l1");
+				$("canvas").drawLine({
+					layer: true,
+					name: "l1",
+					strokeStyle: "#F00",
+					strokeWidth: 2,
+					x1: 0, y1: 0,
+					x2: dx, y2: dy,
+				});
+				$("canvas").removeLayer("l2");
+				$("canvas").drawLine({
+					layer: true,
+					name: "l2",
+					strokeStyle: "#F00",
+					strokeWidth: 2,
+					x1: <? print $x; ?>, y1: 0,
+					x2: dx, y2: dy,
+				});
+				angle1 = Math.round(180*Math.asin(dy/l1)/3.14159);
+				$("canvas").drawText({
+					strokeStyle: "#000",
+					fillStyle: "#000",
+					strokeWidth: 1,
+					x: dx/2, y: dy/2,
+					font: "12pt Arial",
+					text: l1,
+					fromCenter: true,
+					rotate: angle1,
+				});
+				angle2 = Math.round(-180*Math.asin(dy/l2)/3.14159);
+				$("canvas").drawText({
+					strokeStyle: "#000",
+					fillStyle: "#000",
+					strokeWidth: 1,
+					x: dx+(<? print $x; ?>-dx)/2, y: dy/2,
+					font: "12pt Arial",
+					text: l2,
+					fromCenter: true,
+					rotate: angle2,
+				});
+				$("canvas").drawText({
+					strokeStyle: "#000",
+					fillStyle: "#000",
+					strokeWidth: 1,
+					x: dx/2, y: dy,
+					font: "12pt Arial",
+					text: Math.round(dx),
+				});
+				$("canvas").drawText({
+					strokeStyle: "#000",
+					fillStyle: "#000",
+					strokeWidth: 1,
+					x: dx, y: dy/2,
+					font: "12pt Arial",
+					text: Math.round(dy),
+				});
+				ws.send("G0X"+dx+"Y"+dy+"Z0");
 			}
-		});
-		$("canvas").drawArc({
-			layer: true,
-			fillStyle: "gray",
-			x: 0, y: 0,
-			radius: 10,
-			click: function(layer) { ws.send("G0X0Y0Z0"); }
-		});
-		$("canvas").drawArc({
-			layer: true,
-			fillStyle: "gray",
-			x: 200, y: 0,
-			radius: 10,
-			click: function(layer) { ws.send("G0X200Y0Z0"); }
-		});
-		$("canvas").drawArc({
-			layer: true,
-			fillStyle: "gray",
-			x: 400, y: 0,
-			radius: 10,
-			click: function(layer) { ws.send("G0X400Y0Z0"); }
-		});
-		$("canvas").drawArc({
-			layer: true,
-			fillStyle: "gray",
-			x: 0, y: 200,
-			radius: 10,
-			click: function(layer) { ws.send("G0X0Y200Z0"); }
-		});
-		$("canvas").drawArc({
-			layer: true,
-			fillStyle: "gray",
-			x: 200, y: 200,
-			radius: 10,
-			click: function(layer) { ws.send("G0X200Y200Z0"); }
-		});
-		$("canvas").drawArc({
-			layer: true,
-			fillStyle: "gray",
-			x: 400, y: 200,
-			radius: 10,
-			click: function(layer) { ws.send("G0X400Y200Z0"); }
-		});
-		$("canvas").drawArc({
-			layer: true,
-			fillStyle: "gray",
-			x: 0, y: 400,
-			radius: 10,
-			click: function(layer) { ws.send("G0X0Y400Z0"); }
-		});
-		$("canvas").drawArc({
-			layer: true,
-			fillStyle: "gray",
-			x: 200, y: 400,
-			radius: 10,
-			click: function(layer) { ws.send("G0X200Y400Z0"); }
-		});
-		$("canvas").drawArc({
-			layer: true,
-			fillStyle: "gray",
-			x: 400, y: 400,
-			radius: 10,
-			click: function(layer) { ws.send("G0X400Y400Z0"); }
 		});
       });
     </script>
@@ -162,7 +179,7 @@
 			  <input type="button" id="thebutton" value="Send" />
 			</div>
 		</div>
-		<canvas id='mycanvas' width=400 height=400>
+		<canvas id='mycanvas' width=<? print $x; ?> height=<? print $y; ?>>
 			This text is displayed if your browser does not support HTML5 Canvas.
 		</canvas>
 	</div>
