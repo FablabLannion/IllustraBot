@@ -10,11 +10,14 @@ import socket
 import spi
 
 return_text = 1
-botname = 'testFile'
+#botname = 'testFile'
+botname = 'testSPI'
 #~ sourceMaxX = 465
 #~ sourceMaxY = 780
 sourceMaxX = 400
 sourceMaxY = 400
+diffX=400
+diffY=730
 config = {	'drawbot': {
 				'type': 'dev',
 				'arduinoDev': '/dev/ttyUSB0',
@@ -71,7 +74,7 @@ config = {	'drawbot': {
 				},
 			'testSPI': {
 				'type': 'spi',
-				'sizeX': 500,
+				'sizeX': 400,
 				'sizeY': 700,
 				'inverseAxes': 0,
 				'trapezeFactor': 0,
@@ -90,7 +93,9 @@ class GCodeHGandler():
 			self.x = float(matchObj.group(1))
 			self.y = float(matchObj.group(2))
 			self.z = float(matchObj.group(3))
-			self.scale()
+			#self.scale()
+			if config[botname]['moveToLenght']:
+				self.toDrawBotLength()
 			if config[botname]['inverseAxes']:
 				self.inverseAxes()
 			if config[botname]['floor']:
@@ -120,8 +125,16 @@ class GCodeHGandler():
 	# Prepare DrawBot length
 	def toDrawBotLength(self):
 		orig_x = self.x
-		self.x = math.sqrt(math.pow(self.x,2)+math.pow(self.y,2))
-		self.y = math.sqrt(math.pow(config[botname]['sizeX']-orig_x,2)+math.pow(self.y,2))
+		orig_y = self.y
+		print (self.x,self.y)
+		self.x = math.sqrt(math.pow(self.x,2)+math.pow(self.y,2))+diffX
+		self.y = math.sqrt(math.pow(config[botname]['sizeX']-orig_x,2)+math.pow(orig_y,2))+diffY
+		print (self.x,self.y)
+		#if self.y > diffY:
+		#	self.y -= diffY
+		#else:
+		#	self.y = diffY - self.y
+		#print (self.x,self.y)
 
 	# Scale the gcode to the target
 	def scale(self):
