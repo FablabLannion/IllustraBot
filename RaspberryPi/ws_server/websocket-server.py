@@ -108,7 +108,7 @@ class GCodeHGandler():
 			
 	# Prepare the GCode depending on the target (DrawBot or Reprap)
 	def prepareGCode(self):
-		self.gcode = 'G0X' + str(self.x) + 'Y'+ str(self.y) + 'Z' + str(self.z) + "\n"
+		self.gcode = 'G0X' + "%04d"%(self.x) + 'Y'+ "%04d"%(self.y) + 'Z' + "%04d"%(self.z)
 	
 	# inverse axes
 	def inverseAxes(self):
@@ -181,8 +181,14 @@ class Robot():
 			self.f.flush()
 			self.readLine = 'this is a file, can not read robot return'
 		elif config[botname]['type'] == 'spi':
+			# compute crc on last 7 bytes
+			crc = 0
+			for b in gcode_h.gcode:
+				crc += ord(b)
+			crc &= 0xFF # keep only last byte
+			print(crc)
 			self.readLine = "\n"
-			list_c = tuple(map(ord,list(gcode_h.gcode)))
+			list_c = tuple(map(ord,list(gcode_h.gcode))+[crc,10])
 			print list_c
 			spi.transfer(list_c)
 		elif config[botname]['type'] == 'socket':
