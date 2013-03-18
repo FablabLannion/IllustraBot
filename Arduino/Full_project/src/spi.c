@@ -22,7 +22,9 @@ void spi_initslave(void)
   // MSB transmit first
   // SPI enable
   // Mode 0 (CPOL = 0 / CPHA = 0)
-  SPCR |= _BV(SPE);
+  //SPCR |= _BV(SPE);
+   //Mode 3 (CPOL = 1 / CPHA = 1)
+  SPCR |= _BV(SPE); 
   
   // now turn on interrupts
   spi_attachInterrupt();

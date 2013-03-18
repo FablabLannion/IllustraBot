@@ -57,7 +57,8 @@ int main(void)
   memset(&sys, 0, sizeof(sys));  // Clear all system variables
   sys.abort = true;   // Set abort to complete initialization
   sys.state = STATE_INIT;  // Set alarm state to indicate unknown initial position
- 
+  sys.position[Y_AXIS] = settings.steps_per_mm[Y_AXIS] * 730; // JJL
+  sys.position[X_AXIS] = settings.steps_per_mm[X_AXIS] * 400; // JJL
   
   for(;;) {
   

@@ -170,7 +170,7 @@ void protocol_execute_runtime()
 }  
 
 
-/*// Directs and executes one line of formatted input from protocol_process. While mostly
+// Directs and executes one line of formatted input from protocol_process. While mostly
 // incoming streaming g-code blocks, this also executes Grbl internal commands, such as 
 // settings, initiating the homing cycle, and toggling switch states. This differs from
 // the runtime command module by being susceptible to when Grbl is ready to execute the 
@@ -227,7 +227,7 @@ uint8_t protocol_execute_line(char *line)
         if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) {
           // Only perform homing if Grbl is idle or lost.
           if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) { 
-            mc_go_home(); 
+            //mc_go_home(); 
             if (!sys.abort) { protocol_execute_startup(); } // Execute startup scripts after successful homing.
           } else { return(STATUS_IDLE_ERROR); }
         } else { return(STATUS_SETTING_DISABLED); }
@@ -287,7 +287,7 @@ uint8_t protocol_execute_line(char *line)
   {
     return(gc_execute_line(line));    // Everything else is gcode
   }
-}*/
+}
 
 // Directs and executes one line of formatted input from protocol_process. While mostly
 // incoming streaming g-code blocks, this also executes Grbl internal commands, such as 
@@ -297,10 +297,10 @@ uint8_t protocol_execute_line(char *line)
 // the lines that are processed afterward, not necessarily real-time during a cycle, 
 // since there are motions already stored in the buffer. However, this 'lag' should not
 // be an issue, since these commands are not typically used during a cycle.
-uint8_t protocol_execute_line(char *line) 
+/*uint8_t protocol_execute_line(char *line) 
 {   
   return(gc_execute_line(line));    // Execute gcode line
-}
+}*/
 
 
 // Process and report status one line of incoming serial data. Performs an initial filtering
@@ -393,6 +393,7 @@ void protocol_process()
 	#else
 		uint8_t c;
 		while((c = serial_read()) != SERIAL_NO_DATA) {
+		    serial_write(c);
 			if ((c == '\n') || (c == '\r')) { // End of line reached
 
 				// Runtime command check point before executing line. Prevent any furthur line executions.
