@@ -170,7 +170,7 @@ void protocol_execute_runtime()
 }  
 
 
-// Directs and executes one line of formatted input from protocol_process. While mostly
+/*// Directs and executes one line of formatted input from protocol_process. While mostly
 // incoming streaming g-code blocks, this also executes Grbl internal commands, such as 
 // settings, initiating the homing cycle, and toggling switch states. This differs from
 // the runtime command module by being susceptible to when Grbl is ready to execute the 
@@ -227,7 +227,7 @@ uint8_t protocol_execute_line(char *line)
         if (bit_istrue(settings.flags,BITFLAG_HOMING_ENABLE)) {
           // Only perform homing if Grbl is idle or lost.
           if ( sys.state==STATE_IDLE || sys.state==STATE_ALARM ) { 
-            //mc_go_home(); 
+            mc_go_home(); 
             if (!sys.abort) { protocol_execute_startup(); } // Execute startup scripts after successful homing.
           } else { return(STATUS_IDLE_ERROR); }
         } else { return(STATUS_SETTING_DISABLED); }
@@ -287,7 +287,7 @@ uint8_t protocol_execute_line(char *line)
   {
     return(gc_execute_line(line));    // Everything else is gcode
   }
-}
+}*/
 
 // Directs and executes one line of formatted input from protocol_process. While mostly
 // incoming streaming g-code blocks, this also executes Grbl internal commands, such as 
@@ -297,10 +297,47 @@ uint8_t protocol_execute_line(char *line)
 // the lines that are processed afterward, not necessarily real-time during a cycle, 
 // since there are motions already stored in the buffer. However, this 'lag' should not
 // be an issue, since these commands are not typically used during a cycle.
-/*uint8_t protocol_execute_line(char *line) 
+uint8_t protocol_execute_line(char *line) 
 {   
   return(gc_execute_line(line));    // Execute gcode line
-}*/
+}
+
+uint8_t verify_crc(char *line)
+{
+	uint8_t calc=0;
+	uint8_t i;
+	uint8_t *ptr = (uint8_t*)line;
+	
+	if( (*ptr!='G') || (char_counter != 18) )
+	{
+		printString("Bad frame format \n");
+		//serial_write((char)char_counter);
+		
+		return(false);
+	}
+	
+	for(i=0;i<17;i++)
+	{
+		calc += ptr[i];
+		//serial_write((char)calc);
+		
+		}
+		
+	
+	if(calc != ptr[17])
+	{
+		printString("error frame crc \n");
+		/*
+		serial_write((char)calc);
+		serial_write((char)ptr[17]);
+		*/
+		return(false);
+	}
+	
+	
+	return(true);
+
+}
 
 
 // Process and report status one line of incoming serial data. Performs an initial filtering
@@ -322,7 +359,20 @@ void protocol_process()
 			if(ptr_rd_buffer_spi > ptr_wr_buffer_spi) spi_length=TAILLE_BUFFER_SPI-(ptr_rd_buffer_spi-ptr_wr_buffer_spi);
 			else spi_length=ptr_wr_buffer_spi-ptr_rd_buffer_spi;
 			
-			if(spi_length>= 0.8*TAILLE_BUFFER_SPI) printString("BUFFER SPI 80% FULL");
+			if(spi_length>= 0.8*TAILLE_BUFFER_SPI) 
+			{
+				printString("BUFFER SPI 80% FULL");
+				//SPI_LATCH_PORT = (SPI_LATCH_PORT |= 0x02);
+			}	
+			else
+			{
+				//SPI_LATCH_PORT = (SPI_LATCH_PORT & ~0x02);
+			}
+			
+			if(spi_length>= 0.9*TAILLE_BUFFER_SPI) 
+			{
+				printString("BUFFER SPI 90% FULLLL");
+			}
 
 			c = BUFFER_SPI[ptr_rd_buffer_spi];
 			serial_write(c);
@@ -332,6 +382,10 @@ void protocol_process()
 			
 			if ((c == '\n') || (c == '\r'))
 			{ // End of line reached
+			
+			if( verify_crc(line) == true)
+			{
+				line[char_counter - 1] = 0;
 
 			// Runtime command check point before executing line. Prevent any furthur line executions.
 			// NOTE: If there is no line, this function should quickly return to the main program when
@@ -348,6 +402,12 @@ void protocol_process()
 			}
 			char_counter = 0; // Reset line buffer index
 			iscomment = false; // Reset comment flag
+			}
+			else
+			{
+				char_counter = 0; // Reset line buffer index
+				iscomment = false; // Reset comment flag
+			}
 		  
 			} 
 			else 
@@ -393,7 +453,6 @@ void protocol_process()
 	#else
 		uint8_t c;
 		while((c = serial_read()) != SERIAL_NO_DATA) {
-		    serial_write(c);
 			if ((c == '\n') || (c == '\r')) { // End of line reached
 
 				// Runtime command check point before executing line. Prevent any furthur line executions.
