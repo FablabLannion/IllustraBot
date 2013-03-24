@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <EditTextPreference
+        android:defaultValue="10.40.213.133"        
+        android:dialogMessage="Hostname of Websocket server"
+        android:dialogTitle="Hostname"
+        android:key="tgfx_hostname"
+        android:summary="The hostname of the machine running Websocket"
+        android:title="Hostname" />
+    <EditTextPreference
+        android:defaultValue="22300"
+        android:dialogMessage="Server port"
+        android:dialogTitle="Port"
+        android:key="tgfx_port"
+        android:summary="Network port of Websocket server"
+        android:title="Port" />
+    <EditTextPreference
+        android:defaultValue="/ws"
+        android:dialogMessage="Server directory"
+        android:dialogTitle="Directory"
+        android:key="tgfx_dir"
+        android:summary="Network directory of Websocket server"
+        android:title="Directory" />    
+    
+    
+
+</PreferenceScreen>
