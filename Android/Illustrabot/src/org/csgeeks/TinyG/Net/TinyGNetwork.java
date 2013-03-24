@@ -65,7 +65,22 @@ public class TinyGNetwork extends TinyGService {
 		String msg = "{"+cmd_type+", "+cmd+"}";
 		//queue.put(msg);
 		Log.d(TAG, "Sending CMD: " + msg);
-		mConnection.sendTextMessage(cmd);
+		if (mConnection.isConnected())
+		{
+			mConnection.sendTextMessage(cmd);
+		} 
+		else
+		{ 
+			Log.d(TAG, "NOT CONNECTED ???");
+			// Let everyone know we are disconnected
+			Bundle b = new Bundle();
+			b.putBoolean("connection", false);
+			Intent i = new Intent(CONNECTION_STATUS);
+			i.putExtras(b);
+			sendBroadcast(i, null);	   			
+			
+
+		}
 	}
 	
 	private void start() {
