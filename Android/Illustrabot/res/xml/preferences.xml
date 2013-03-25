@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogMessage="Timer Period in ms"
+        android:dialogTitle="Timer"
+        android:key="timerPeriod"
+        android:summary="Timer Period in ms"
+        android:title="Timer" />       
+    <EditTextPreference
+        android:defaultValue="100"
+        android:dialogMessage="Drawing velocity"
+        android:dialogTitle="Drawing velocity"
+        android:key="drawingVelocity"
+        android:summary="Drawing velocity"
+        android:title="Velocity" /> 
+    <EditTextPreference
+        android:defaultValue="200"
+        android:dialogMessage="Y offset"
+        android:dialogTitle="Y offset"
+        android:key="yOffset"
+        android:summary="Y offset"
+        android:title="Yoffset" /> 
+    <EditTextPreference
+        android:defaultValue="0"
+        android:dialogMessage="ALIVE trigger"
+        android:dialogTitle="ALIVE trigger"
+        android:key="AliveTrigger"
+        android:summary="AliveTrigger"
+        android:title="AliveTrigger" />    
+    
+    
+</PreferenceScreen>

@@ -1,0 +1,1 @@
+use home button instead of shaker to clear drawing ( more stable)
