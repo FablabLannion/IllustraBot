@@ -219,10 +219,5 @@ public class DrawingFragment extends SherlockFragment implements OnTouchListener
 	             break;
 		}
 		return false;
-	}	
-	
-
-
-	
-	
+	}
 }
